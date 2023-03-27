@@ -3,23 +3,24 @@ package com.example.game.mapper;
 
 import com.example.game.model.Game;
 import com.example.game.model.dto.GameDto;
-import com.example.game.model.dto.GameRequest;
-import org.mapstruct.Mapper;
 
-import org.mapstruct.factory.Mappers;
-import reactor.core.publisher.Mono;
+import org.springframework.beans.BeanUtils;
 
-@Mapper(componentModel = "spring")
-public interface GameMapper {
 
-    GameMapper INSTANCE = Mappers.getMapper(GameMapper.class);
+public class GameMapper {
 
-    Game toEntity(GameRequest gameRequest);
+    public GameDto entityToDto (Game game){
+        GameDto gameDto = new GameDto();
+        BeanUtils.copyProperties(game, gameDto);
+        return  gameDto;
 
-    GameDto toDto(Game game);
+    }
 
-    default Mono<GameDto> toDtoMono(Mono<Game> game) {
-        return game.map(this::toDto).cast(GameDto.class);
+    public static Game dtoToEntity (GameDto gameDto){
+        Game game = new Game();
+        BeanUtils.copyProperties(gameDto,game);
+        return  game;
+
     }
 }
 

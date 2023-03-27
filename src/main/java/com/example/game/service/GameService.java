@@ -5,6 +5,7 @@ import com.example.game.model.Game;
 import com.example.game.model.dto.GameDto;
 import com.example.game.model.dto.GameRequest;
 import com.example.game.repository.GameRepository;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -15,10 +16,11 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @RequiredArgsConstructor
+@Builder
 public class GameService {
 
     private final GameRepository gameRepository;
-    private final GameMapper gameMapper = GameMapper.INSTANCE;
+    private final GameMapper gameMapper;
 
     public Mono<ResponseEntity<GameDto>> playGame(GameRequest gameRequest) {
         int randomNumber = ThreadLocalRandom.current().nextInt(1, 101);
@@ -26,24 +28,20 @@ public class GameService {
         if (gameRequest.getPlayerNumber() >= randomNumber) {
             win = gameRequest.getBet() * 1.95;
         }
-        Game game = Game.builder()
-                .playerNumber(gameRequest.getPlayerNumber())
-                .bet(gameRequest.getBet())
-                .randomNumber(randomNumber)
-                .win(win)
-                .build();
+        Game game = new Game(randomNumber, win, gameRequest);
         return gameRepository.save(game)
-                .map(gameMapper::toDto)
+                .map(gameMapper::entityToDto)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     public Mono<ResponseEntity<GameDto>> findGameByPlayerNumber(int playerNumber) {
         return gameRepository.findByPlayerNumber(playerNumber)
-                .map(gameMapper::toDto)
+                .map(gameMapper::entityToDto)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 }
+
 
 
