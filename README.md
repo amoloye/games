@@ -24,7 +24,7 @@ The project includes integration tests that simulate playing 1 million rounds in
 #Data Mapping
 
 
-The project uses Mapstruct to map the GameRequest and Game objects to GameDto objects. The GameMapper interface defines the mapping methods between the objects.
+The project uses bean.utils to map the GameRequest and Game objects to GameDto objects. The GameMapper interface defines the mapping methods between the objects.
 
 #Exception Handling
 
